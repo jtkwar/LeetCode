@@ -90,6 +90,45 @@ class Solution:
         return(result)
         
 """
+14. Longest Common Prefix
+Write a function to find the longest common prefix string amongst an array of strings.
+If there is no common prefix, return an empty string ""
+"""
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        res = []
+        for letters in zip(*strs):
+            if len(set(letters)) == 1:
+                res.append(letters[0])
+            else:
+                break
+        return "".join(res)
+        
+"""
+20. Valid Parentheses
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+Open brackets must be closed by the same type of brackets.
+Open brackets must be closed in the correct order.
+"""
+class Solution:
+    def isValid(self, s: str) -> bool:
+        d = {"(":")","[":"]","{":"}"}
+        rev = s[::-1] #Let's reverse the string bcz the key-value is stored in proper order
+        stk = [] #Empty stack
+    
+        for i in rev:
+            if i not in d:
+                stk.append(i)
+            elif len(stk) == 0 or stk.pop() != d[i]: #len(stk) == 0 is required where input = "((", here nothing will be inserted in stack
+                return(0)
+        
+        if len(stk)==0: #Every element is popped out
+            return 1
+            
+"""
 21. MERGE TWO SORTED LISTS
 Merge two sorted linked lists and return it as a sorted list. 
 The list should be made by splicing together the nodes of the first two lists.
@@ -122,6 +161,69 @@ class Solution:
                 k += 1
 
         return k
+
+"""
+27. REMOVE ELEMENT
+"""
+class Solution:
+    def removeElement(self, nums: List[int], val: int) -> int:
+        nums[:] = (item for item in nums if item != val)
+        return len(nums)
+        
+"""
+35. SEARCH INSERT POSITION
+Given a sorted array of distinct integers and a target value, return the index if the target is found. 
+If not, return the index where it would be if it were inserted in order.
+"""
+class Solution:
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        copy_nums = nums
+        try:
+            return nums.index(target)
+        except:
+            copy_nums.append(target)
+            return sorted(copy_nums).index(target)
+
+"""
+58. LENGTH OF LAST WORD
+Given a string s consists of some words separated by spaces,
+return the length of the last word in the string. If the last word does not exist, return 0.
+
+A word is a maximal substring consisting of non-space characters only.
+"""
+class Solution:
+    def lengthOfLastWord(self, s: str) -> int:
+        word = list(filter(None, s.split(" ")))
+        return len(word[-1]) if len(word) else 0
+     
+"""
+66. PLUS ONE
+Given a non-empty array of decimal digits representing a non-negative integer,
+increment one to the integer.
+
+The digits are stored such that the most significant digit is at the head of the list,
+and each element in the array contains a single digit.
+
+You may assume the integer does not contain any leading zero, except the number 0 itself.
+"""
+class Solution:
+    def plusOne(self, digits: List[int]) -> List[int]:
+        if len(digits) > 0: 
+            num = int("".join([str(i) for i in digits])) + 1
+            num = [int(i) for i in str(num)]
+        if len(num) < len(digits):
+            num = [0] * (len(digits) - len(num)) + num
+        return num
+
+"""
+67. ADD BINARY
+Given two binary strings a and b, return their sum as a binary string
+"""
+class Solution:
+    def addBinary(self, a: str, b: str) -> str:
+        out = int(a, 2) + int(b, 2)
+        return(str(bin(out)[2:]))
+
 """
 69. SQRT(X)
 Given a non-negative integer x, compute and return the square root of x.
@@ -131,3 +233,20 @@ and only the integer part of the result is returned.
 class Solution:
     def mySqrt(self, x: int) -> int:
         return(int(sqrt(x)))
+
+"""
+70. CLIMBING STAIRS
+You are climbing a staircase. It takes n steps to reach the top.
+
+Each time you can either climb 1 or 2 steps. 
+In how many distinct ways can you climb to the top?
+"""
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        if n <= 2: return n
+        s1, s2, s3 = 0, 1, 2
+        while n > 2:
+            s1, s2 = s2, s3
+            s3 = s1 + s2
+            n -= 1
+        return s3
