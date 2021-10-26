@@ -56,3 +56,9 @@ FROM weather w1
 JOIN weather w2
 WHERE w1.temperature > w2.temperature
 AND DATEDIFF(w1.recorddate, w2.recorddate)=1
+
+# 178. Rank Scores
+# Write your MySQL query statement below
+select score,
+DENSE_RANK() OVER (ORDER BY score DESC) "rank"
+from scores;
