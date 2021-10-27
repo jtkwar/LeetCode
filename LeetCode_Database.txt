@@ -62,3 +62,52 @@ AND DATEDIFF(w1.recorddate, w2.recorddate)=1
 select score,
 DENSE_RANK() OVER (ORDER BY score DESC) "rank"
 from scores;
+
+177. Nth Highest Salary
+# 344 ms, 48.56% faster
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      # Write your MySQL query statement below.
+      with EmployeeSalaryRank AS
+      (
+      select ID, Salary, dense_rank() over (order by Salary Desc) as ranks
+      from Employee
+      )
+      
+      Select distinct Salary
+      from EmployeeSalaryRank
+      where ranks=N
+  );
+END
+
+# 259 ms, 99.40% faster
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+      # Write your MySQL query statement below.
+      SELECT
+      CASE WHEN COUNT(DISTINCT rnk)<N THEN NULL ELSE MIN(salary) END
+      FROM (SELECT salary, DENSE_RANK() OVER(ORDER BY salary DESC) AS rnk
+           FROM Employee) a WHERE rnk<=N
+  );
+END
+
+# 595. Big Countries
+SELECT name,population,area FROM World
+WHERE population>25000000 OR area>3000000
+
+# 596. Classes More Than 5 Students
+select class from courses
+group by class
+having count(class) >= 5;
+
+# 620. Not Boring Movies
+select * from cinema
+where id%2 != 0 and description != 'boring'
+order by rating desc;
+
+# 627. Swap Salary
+UPDATE salary
+SET sex = CASE WHEN sex='f' THEN 'm'
+          ELSE 'f' END
