@@ -112,3 +112,87 @@ class Solution:
             if c == '1':
                 count += 1
         return count
+
+"""
+3. Longest Substring Without Repeating Characters
+"""
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        # key = character, value = most recently seen index with character
+        visited = defaultdict(int)
+        maxLen = 0
+        i = 0
+        for j, char in enumerate(s):
+            # if char was already seen in visited dictionary
+            if char in visited:
+                # update left boundary i to this last seen index + 1
+                i = max(i, visited[char]+1)
+            # update the visited[char] to most recently seen index j, regardless if it's in visited
+            visited[char] = j
+            # update maxLen if our interval i, j is bigger
+            maxLen = max(maxLen, j-i+1)
+        return maxLen
+		
+"""
+29. Divide Two Integers
+Given two integers dividend and divisor, divide two integers without using multiplication, division, and mod operator.
+"""
+class Solution:
+    def divide(self, dividend: int, divisor: int) -> int:
+        if dividend == 0:
+            return 0
+        sign = 1 if ((dividend < 0) ^ (divisor < 0)) else 0
+        dividend = abs(dividend)
+        divisor  = abs(divisor)
+        res = 0
+        while dividend >= divisor:
+            k = 0
+            while dividend >= divisor << (k+1):
+                k += 1
+            dividend -= (divisor << k)
+            res += 1 << k
+        MAX_INT = (1 << 31)-1
+        return -res if sign else (res if res <= MAX_INT else MAX_INT)
+		
+
+"""
+34. Find First and Last Position of Element in Sorted Array
+O(log n) runtime
+"""
+class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        def left_border(nums, target, left, right):
+            while left+1 < right:
+                mid = (left + right) // 2
+                if nums[mid] < target:
+                    left = mid
+                else:
+                    right = mid
+            if nums[left] == target: return left
+            if nums[right] == target: return right
+            return -1
+        
+        def right_border(nums, target, left, right):
+            while left + 1 < right:
+                mid = (left + right) // 2
+                if nums[mid] > target:
+                    right = mid
+                else:
+                    left = mid
+            if nums[right] == target: return right
+            if nums[left] == target: return left
+            return -1
+        
+        if len(nums) == 0:
+            return [-1, -1]
+        
+        left = 0
+        right = len(nums) - 1
+        
+        res_left = left_border(nums, target, left, right)
+        if res_left != -1:
+            res_right = right_border(nums, target, left, right)
+        else:
+            res_right = -1
+        
+        return [res_left, res_right]
