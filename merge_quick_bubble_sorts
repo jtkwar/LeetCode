@@ -1,0 +1,126 @@
+"""
+Bubble Sort
+The worst performing sorying algorithm amongst Bubble, Quick, and Merge
+Looks at adjacent pairs of elements in an array, ans swap their positions if the first element is larger than the second, or move on if it is not.
+Time Complexity   = O(n^2)
+Space Complexity = O(1)
+"""
+def bubble_sort(arr):
+	# go through the array as mant times as there are elements
+	for i in range(len(arr)):
+	# want the last pair of adjacent elements to be (n-2, n-1)
+		for j in range(len(arr) - 1):
+			if arr[j] > arr[j+1]:
+				# swap
+				arr[j], arr[j+1] = arr[j+1], arr[j]
+				
+				
+
+"""
+Quicksort
+Average Complexity = O(n log n)
+representative of three types of sorting algorithms: divide and conquor, in-place, and unstable
+- Divide and Conquor: splits the array into smaller arrays until it ends up with an empty array or one that has onle one element before recursively sorting the larger arrays
+- In place: quicksort does not create any copies of the array or any subarrays.  requires stack emmory for all recursive calls
+- unstable: a stable sorting algo is one in which elements with the same value appear in the same relative order in the sorted array, as they do before the array is sorted.  An unstable sorting algo does not guarantee this
+
+more often than not, quicksort will fail to divide the array into equal parts because the whole process depends on the pivot.  need to choose the pivot  so that it's roughly larger than half the elements
+most straightforward approach is to simply choose the first or last element (results in very poor performance for mostly sorted or already sorted arrays)
+Goal: move the elements around so all elements smaller than the pivot are to its left and all larger elements are to its right.  do not necessarily end up sorted just want larger on the right and smaller on the left
+naturally a recursive algorithm
+"""
+def partition(arr, start, end):
+	pivot = arr[start]
+	low = start + 1
+	high = end
+	
+	while True:
+		# if current value we're looking at is larger than pivot
+		# it's in the right place and we can move left, to the next element
+		# we also need to make sure we have not surpassed the lower pointer, since that indicates we have already moved all the elements to their correct side of the pivot
+		while low <= high and arr[high] >= pivot:
+			high = high - 1
+		# opposite process of the one above
+		while low <= high and arr[low] <= pivot:
+			low = low + 1
+		
+		# have either found a value for both high and low that is out of order
+		# or low is higher than high, in which case we exit the loop
+		if low <= high:
+			arr[low], arr[high] = arr[high], arr[low]
+			# the loop continues
+		else:
+			# exit the loop
+			break
+	arr[start], arr[high] = arr[high], arr[start]
+	
+	return high
+	
+def quick_sort(arr, start, end):
+	if start >= end:
+		return
+	p = partition(arr, start, end)
+	quick_sort(arr, start, p-1)
+	quick_sort(arr, p+1, end)
+	
+"""
+Merge Sort
+classic example of divide and conquor
+HOW IT WORKS:
+- divide array into roughly two equal parts
+- subarrays are divided over and over again into halves until you end up with arrays that only have one element each
+- then combine the pairs of one-element arrays into two element arrays, sorting them in the process.  Then you build back up to four element arrays, until you end up with the initial array that is sorted
+
+TWO WAYS TO IMPLEMENT:
+- TopDown
+- BottomUp
+
+TWO SPECIAL CASES
+- both subarrays have same element, can move forward in either one and add the element to the sorted array.
+- run out of elements in one subarray.  whenever we run out of elements in a subarray we simply add the elements of the second one after the other
+"""
+def merge_sort(arr, left_idx, right_idx):
+	if left_idx >= right_idx:
+		return
+	middle = (left_idx + right_idx)//2
+	merge_sort(arr, left_idx, middle)
+	merge_sort(arr, middle+1, right_idx)
+	merge(arr, left_idx, right_idx, middle)
+	
+def merge(arr, left_idx, right_idx, middle):
+	# make copies of both arrays we are trying to merge
+	
+	# second parameter is non-inclusive, so we have to increase by 1
+	left_copy = arr[left_idx:middle+1]
+	right_copy = arr[middle+1:right_idx+1]
+	
+	# initial values for variables that we use to keep track of where we are in each array
+	left_copy_idx = 0
+	right_copy_idx = 0
+	sorted_idx = left_idx
+	
+	# go through both copies until we run out of elements in one
+	while left_copy_idx < len(left_copy) and right_copy_idx < len(right_copy):
+		
+		# if left_copy has the smaller element, put it in the sorted part and then move forward in left_copy (by increasing the pointer)
+		if left_copy[left_copy_idx] <= right_copy[right_copy_idx]:
+			arr[sorted_idx] = left_copy[left_copy_idx]
+			left_copy_idx = left_copy_idx + 1
+		# opposite from above
+		else:
+			arr[sorted_idx] = right_copy[right_copy_idx]
+			right_copy_idx = right_copy_idx + 1
+		
+		# regardless of where we got our element from, move forward in the sorted part
+		sorted_idx = sorted_idx + 1
+		
+	# we ran out of elements either in left_copy or right_copy so we will go through the remaining elements and add them
+	while left_copy_idx < len(left_copy):
+		arr[sorted_idx] = left_copy[left_copy_idx]
+		left_copy_idx = left_copy_idx + 1
+		sorted_idx = sorted_idx + 1
+	while right_copy_idx < len(right_copy):
+		arr[sorted_idx] = right_copy[right_copy_idx]
+		right_copy_idx = right_copy_idx + 1
+		sorted_idx = sorted_idx + 1
+		
